@@ -6,34 +6,52 @@ on:
     branches: [ development ]
 
 jobs:
+  # 1. Build Job: Ensures code is stable before merging
   build-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Set up Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      # Install dependencies 
       - name: Install Dependencies
         run: npm install
 
-      # Build the project
       - name: Build Frontend
         run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
-      # Deploy to GitHub Pages
       - name: Deploy to GitHub Pages 
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          # publish_branch: gh-pages
-        
+
+  # 2. Merge Job: Only runs if the Build Job is successful
+  merge-branches:
+    runs-on: ubuntu-latest
+    needs: build-deploy # Critical: Prevents merging broken code
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Git Identity
+        run: |
+          git config --global user.name "aathifinfo-116"
+          git config --global user.email "aathifinfo116@gmail.com"
+
+      - name: Merge Development into Main
+        run: |
+          git fetch origin main
+          git checkout main
+          git merge origin/development --no-ff -m "CI: Automated merge development -> main"
+          git push origin main
