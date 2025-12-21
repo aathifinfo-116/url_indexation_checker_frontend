@@ -46,5 +46,4 @@ export default defineConfig({
       }
     }
   },
-  // base: '/url_indexation_checker/'
 })
