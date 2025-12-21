@@ -3,7 +3,7 @@ name: Frontend Indexation Dashboard Deployment
 on:
   workflow_dispatch:
   push:
-    branches: [ development ]
+    branches: [ develop ]
 
 jobs:
   build-deploy:
