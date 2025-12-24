@@ -3,7 +3,7 @@ name: Frontend Indexation Dashboard Deployment
 on:
   workflow_dispatch:
   push:
-    branches: [ development ]
+    branches: [ develop ]
 
 jobs:
   # 1. Build Job: Ensures code is stable before merging
@@ -53,5 +53,5 @@ jobs:
         run: |
           git fetch origin main
           git checkout main
-          git merge origin/development --no-ff -m "CI: Automated merge development -> main"
+          git merge origin/develop --no-ff -m "CI: Automated merge development -> main"
           git push origin main
